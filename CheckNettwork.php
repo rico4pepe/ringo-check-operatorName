@@ -2,8 +2,11 @@
 require_once 'Database.php';
 require_once 'HeaderAuth.php';
 require_once 'PhoneService.php';
+require_once 'Logger.php'; 
 
 header('Content-Type: application/json');
+
+$logger = new Logger();
 
 // Fallback for `getallheaders()` if not available
 if (!function_exists('getallheaders')) {
@@ -27,6 +30,7 @@ $auth = new HeaderAuth($headers);
 // Validate headers
 $authError = $auth->validate();
 if ($authError) {
+    
     echo json_encode(['error' => $authError]);
     exit;
 }
@@ -37,6 +41,7 @@ $phoneNumber = $requestData['phone_number'] ?? null;
 $networkType = $requestData['network_type'] ?? null;
 
 if (empty($phoneNumber) || empty($networkType)) {
+    $logger->log("Phoone number and network type are required");
     echo json_encode(['error' => 'Phone number and network type are required']);
     exit;
 }
